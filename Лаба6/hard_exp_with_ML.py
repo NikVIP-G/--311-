@@ -105,7 +105,7 @@ def run():
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     print("\nОбучение модели...")
-    epochs = 10
+    epochs = 5
     train_losses = []
     train_accuracies = []
 

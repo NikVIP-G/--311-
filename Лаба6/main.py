@@ -111,21 +111,26 @@ def forth_exp():
 
 
 def main():
-    user_input = input("Введите команду: ")
+    while True:
+        user_input = input("Введите команду: ")
 
-    match user_input:
-        case "1":
-            first_exp()
-        case "2":
-            second_exp()
-        case "3":
-            third_exp()
-        case "4":
-            forth_exp()
-        case "5":
-            hard_exp.run()
-        case _:
-            print("Такой команды нет!")
+        match user_input:
+            case "1":
+                first_exp()
+            case "2":
+                second_exp()
+            case "3":
+                third_exp()
+            case "4":
+                forth_exp()
+            case "5":
+                hard_exp.run()
+            case "0":
+                break
+            case _:
+                print("Такой команды нет!")
+
+        print()
 
 
 if __name__ == "__main__":
