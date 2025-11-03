@@ -104,7 +104,6 @@ def run():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # Обучение модели
     print("\nОбучение модели...")
     epochs = 10
     train_losses = []
