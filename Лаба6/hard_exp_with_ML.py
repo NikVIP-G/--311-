@@ -55,21 +55,17 @@ def run():
     for i, name in enumerate(class_names):
         print(f"{i}: {name}")
 
-    # Покажем несколько примеров из каждого класса
     plt.figure(figsize=(15, 10))
 
-    # Создаем словарь для хранения первых примеров каждого класса
     class_examples = {}
 
-    # Однократно проходим по датасету и находим по одному примеру каждого класса
     for i in range(len(train_dataset)):
         image, label = train_dataset[i]
         if label not in class_examples:
             class_examples[label] = (image, label)
-        if len(class_examples) == 10:  # Все 10 классов найдены
+        if len(class_examples) == 10:  
             break
-
-    # Отображаем найденные примеры
+            
     for i in range(10):
         image, label = class_examples[i]
 
@@ -81,7 +77,6 @@ def run():
     plt.tight_layout()
     plt.show()
 
-    # Определение модели нейронной сети
     class FashionMNISTModel(nn.Module):
         def __init__(self):
             super(FashionMNISTModel, self).__init__()
@@ -96,9 +91,7 @@ def run():
             x = self.flatten(x)
             logits = self.linear_relu_stack(x)
             return logits
-
-
-    # Создание модели, функции потерь и оптимизатора
+            
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = FashionMNISTModel().to(device)
     criterion = nn.CrossEntropyLoss()
@@ -118,18 +111,15 @@ def run():
         for images, labels in train_loader:
             images, labels = images.to(device), labels.to(device)
 
-            # Forward pass
             outputs = model(images)
             loss = criterion(outputs, labels)
 
-            # Backward pass и оптимизация
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
             running_loss += loss.item()
 
-            # Расчет точности
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
@@ -142,7 +132,6 @@ def run():
 
         print(f'Epoch [{epoch + 1}/{epochs}], Loss: {epoch_loss:.4f}, Accuracy: {epoch_accuracy:.2f}%')
 
-    # Тестирование модели
     model.eval()
     test_correct = 0
     test_total = 0
@@ -157,16 +146,14 @@ def run():
 
     test_accuracy = 100 * test_correct / test_total
     print(f'\nТочность на тестовых данных: {test_accuracy:.2f}%')
-
-    # Визуализация предсказаний
+    
     def imshow(img):
-        img = img / 2 + 0.5  # денормализация
+        img = img / 2 + 0.5  
         npimg = img.numpy()
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.axis('off')
 
-
-    # Покажем несколько тестовых примеров с предсказаниями
+    
     model.eval()
     dataiter = iter(test_loader)
     images, labels = next(dataiter)
@@ -175,8 +162,7 @@ def run():
     with torch.no_grad():
         outputs = model(images)
         _, predictions = torch.max(outputs, 1)
-
-    # Переводим обратно на CPU для визуализации
+        
     images = images.cpu()
     labels = labels.cpu()
     predictions = predictions.cpu()
@@ -198,7 +184,6 @@ def run():
     plt.tight_layout()
     plt.show()
 
-    # Графики обучения
     plt.figure(figsize=(12, 4))
 
     plt.subplot(1, 2, 1)
