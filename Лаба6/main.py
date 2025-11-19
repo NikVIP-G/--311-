@@ -7,14 +7,12 @@ import hard_exp_with_ML as hard_exp
 
 
 def first_exp():
-    # Исходные данные: Фаренгейт -> Кельвины
     fahrenheit = np.array([-40, -22, -4, 14, 32, 50, 68, 86, 104, 122, 140, 158, 176, 194, 212])
-    kelvin = (fahrenheit - 32) * 5 / 9 + 273.15  # Формула перевода
+    kelvin = (fahrenheit - 32) * 5 / 9 + 273.15 
 
     print("Фаренгейт:", fahrenheit)
     print("Кельвины:", kelvin)
 
-    # Визуализация
     plt.figure(figsize=(10, 6))
     plt.scatter(fahrenheit, kelvin, color='red', marker='o', label='F to K данные')
     plt.xlabel('Фаренгейт (°F)')
@@ -24,12 +22,10 @@ def first_exp():
     plt.grid(True)
     plt.show()
 
-    # Линейная регрессия
     fahrenheit_reshaped = fahrenheit.reshape(-1, 1)
     model = LinearRegression()
     model.fit(fahrenheit_reshaped, kelvin)
 
-    # Предсказание
     fahrenheit_test = np.array([0, 100, 200]).reshape(-1, 1)
     kelvin_pred = model.predict(fahrenheit_test)
 
@@ -37,7 +33,6 @@ def first_exp():
     for f, k in zip(fahrenheit_test.flatten(), kelvin_pred):
         print(f"{f}°F = {k:.2f}K")
 
-    # Сравнение с реальными значениями
     kelvin_real = (fahrenheit_test.flatten() - 32) * 5 / 9 + 273.15
     print("\nРеальные значения:")
     for f, k in zip(fahrenheit_test.flatten(), kelvin_real):
@@ -97,7 +92,7 @@ def forth_exp():
     plt.plot(x, y, color='red', linewidth=3, label='Цветок')
     plt.fill(x, y, alpha=0.3, color='pink')
 
-    plt.plot([0, 0], [min(y) - 0.5, min(y)], color='green', linewidth=4, label="Стебель")  # Стебель
+    plt.plot([0, 0], [min(y) - 0.5, min(y)], color='green', linewidth=4, label="Стебель")  
 
     leaf_x = np.linspace(-0.5, 0.5, 100)
     leaf_y = -0.2 * (leaf_x ** 2) + min(y) - 0.2
@@ -135,3 +130,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
