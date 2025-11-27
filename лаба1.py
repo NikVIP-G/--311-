@@ -1,4 +1,3 @@
-Hello World!a = 5
 b = input('b: ')
 
 while not b.isdigit():
