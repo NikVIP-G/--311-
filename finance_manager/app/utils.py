@@ -44,10 +44,8 @@ def export_to_excel(data: List[Dict], filename: str):
     with pd.ExcelWriter(filename, engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name='Данные', index=False)
 
-        # Добавляем форматирование
         worksheet = writer.sheets['Данные']
 
-        # Устанавливаем ширину колонок
         for column in worksheet.columns:
             max_length = 0
             column_letter = column[0].column_letter

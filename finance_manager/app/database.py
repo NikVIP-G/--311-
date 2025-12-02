@@ -14,22 +14,18 @@ class Database:
 
     def __init__(self, data_dir: str = None):
         if data_dir is None:
-            # Используем домашнюю директорию пользователя
             home_dir = os.path.expanduser("~")
             self.data_dir = os.path.join(home_dir, ".personal_finance_manager")
         else:
             self.data_dir = data_dir
 
-        # Создаем директории если не существуют
         os.makedirs(self.data_dir, exist_ok=True)
 
-        # Файлы данных
         self.transactions_file = os.path.join(self.data_dir, "transactions.json")
         self.budgets_file = os.path.join(self.data_dir, "budgets.json")
         self.settings_file = os.path.join(self.data_dir, "settings.json")
         self.categories_file = os.path.join(self.data_dir, "categories.json")
 
-        # Загружаем данные
         self.transactions: List[Transaction] = self._load_transactions()
         self.budgets: List[Budget] = self._load_budgets()
         self.settings: Settings = self._load_settings()
@@ -42,13 +38,10 @@ class Database:
                 with open(self.categories_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     if data and isinstance(data[0], dict) and 'name' in data[0]:
-                        # Новый формат с объектами Category
                         return [Category.from_dict(c) for c in data]
                     else:
-                        # Старый формат (просто список строк)
                         categories = []
                         for cat_name in data:
-                            # Определяем тип категории по умолчанию
                             if cat_name in ["Зарплата", "Фриланс", "Инвестиции", "Подарки", "Возврат"]:
                                 cat_type = CategoryType.INCOME
                             else:
@@ -58,16 +51,13 @@ class Database:
             except (json.JSONDecodeError, IOError) as e:
                 print(f"Ошибка загрузки категорий: {e}")
 
-        # Категории по умолчанию
         default_categories = [
-            # Доходы
             Category(name="Зарплата", type=CategoryType.INCOME, color="#4CAF50", icon="💰"),
             Category(name="Фриланс", type=CategoryType.INCOME, color="#2196F3", icon="💼"),
             Category(name="Инвестиции", type=CategoryType.INCOME, color="#9C27B0", icon="📈"),
             Category(name="Подарки", type=CategoryType.INCOME, color="#FF9800", icon="🎁"),
             Category(name="Возврат", type=CategoryType.INCOME, color="#00BCD4", icon="↪️"),
 
-            # Расходы
             Category(name="Продукты", type=CategoryType.EXPENSE, color="#8BC34A", icon="🛒"),
             Category(name="Кафе и рестораны", type=CategoryType.EXPENSE, color="#FF5722", icon="🍽️"),
             Category(name="Транспорт", type=CategoryType.EXPENSE, color="#3F51B5", icon="🚗"),

@@ -83,9 +83,9 @@ class Budget:
     """Модель бюджета"""
     category: str
     limit: float
-    period: str = "monthly"  # monthly, weekly, yearly
+    period: str = "monthly"
     spent: float = 0.0
-    type: str = "expense"  # income или expense
+    type: str = "expense"
 
     def remaining(self) -> float:
         return self.limit - self.spent

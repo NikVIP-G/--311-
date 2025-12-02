@@ -8,10 +8,8 @@ class BaseFrame(ctk.CTkFrame):
     """Базовый фрейм с общими методами"""
 
     def __init__(self, parent, controller=None, **kwargs):
-        # Сохраняем контроллер отдельно
         self._controller = controller
 
-        # Удаляем controller из kwargs, чтобы не передавать в родительский класс
         if 'controller' in kwargs:
             kwargs.pop('controller')
 
@@ -25,12 +23,10 @@ class BaseFrame(ctk.CTkFrame):
 
     @property
     def controller(self):
-        """Геттер для контроллера"""
         return self._controller
 
     @controller.setter
     def controller(self, value):
-        """Сеттер для контроллера"""
         self._controller = value
 
     @property

@@ -28,35 +28,27 @@ class FinanceApp:
     """Главный класс приложения"""
 
     def __init__(self):
-        # Инициализация главного окна
         self.root = ctk.CTk()
         self.root.title("Personal Finance Manager")
         self.root.geometry("1400x800")
         self.root.minsize(800, 600)
 
-        # Настройка темы
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
 
-        # Инициализация базы данных и контроллера
         self.db = Database()
         self.controller = AppController(self.db)
 
-        # Создание интерфейса
         self._create_menu()
         self._create_main_interface()
 
-        # Обновление данных
         self.update_ui()
 
-        # Регистрация в контроллере
         self.controller.add_update_callback(self.update_ui)
 
-        # Обработка закрытия окна
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def _create_menu(self):
-        """Создание главного меню"""
         menu_frame = ctk.CTkFrame(self.root, height=40)
         menu_frame.pack(side="top", fill="x", padx=10, pady=5)
 
@@ -82,18 +74,14 @@ class FinanceApp:
             btn.pack(side="left", padx=2)
 
     def _create_main_interface(self):
-        """Создание основного интерфейса"""
-        # Основной контейнер
         self.main_container = ctk.CTkFrame(self.root)
         self.main_container.pack(fill="both", expand=True, padx=10, pady=5)
 
-        # Настройка сетки
-        self.main_container.grid_rowconfigure(0, weight=0)  # Баланс
-        self.main_container.grid_rowconfigure(1, weight=1)  # Контент
-        self.main_container.grid_rowconfigure(2, weight=0)  # Быстрые действия
+        self.main_container.grid_rowconfigure(0, weight=0)
+        self.main_container.grid_rowconfigure(1, weight=1)
+        self.main_container.grid_rowconfigure(2, weight=0)
         self.main_container.grid_columnconfigure(0, weight=1)
 
-        # Фрейм баланса
         self.balance_frame = BalanceFrame(
             self.main_container,
             controller=self.controller,
@@ -105,7 +93,6 @@ class FinanceApp:
             padx=5, pady=5
         )
 
-        # Основной контент
         content_frame = ctk.CTkFrame(self.main_container)
         content_frame.grid(
             row=1, column=0,
@@ -114,8 +101,8 @@ class FinanceApp:
         )
 
         content_frame.grid_rowconfigure(0, weight=1)
-        content_frame.grid_columnconfigure(0, weight=2)  # Таблица
-        content_frame.grid_columnconfigure(1, weight=1)  # Графики
+        content_frame.grid_columnconfigure(0, weight=2)
+        content_frame.grid_columnconfigure(1, weight=1)
 
         # Фрейм транзакций
         self.transactions_frame = TransactionsFrame(
@@ -130,7 +117,6 @@ class FinanceApp:
             padx=(0, 5), pady=5
         )
 
-        # Фрейм графиков
         self.charts_frame = ChartsFrame(
             content_frame,
             controller=self.controller
@@ -141,7 +127,6 @@ class FinanceApp:
             padx=(5, 0), pady=5
         )
 
-        # Фрейм быстрых действий
         self.quick_actions_frame = QuickActionsFrame(
             self.main_container,
             controller=self.controller,
@@ -158,7 +143,6 @@ class FinanceApp:
     def update_ui(self):
         """Обновление всего интерфейса"""
         try:
-            # Обновление фреймов
             if hasattr(self, 'balance_frame'):
                 self.balance_frame.refresh()
             if hasattr(self, 'transactions_frame'):
@@ -328,14 +312,12 @@ class FinanceApp:
     def _handle_settings_update(self, settings):
         """Обработка обновления настроек"""
         try:
-            # Обновляем настройки
             for key, value in settings.items():
                 if hasattr(self.db.settings, key):
                     setattr(self.db.settings, key, value)
 
             self.db.save_settings()
 
-            # Применение темы
             if 'theme' in settings:
                 ctk.set_appearance_mode(settings['theme'])
 
@@ -396,12 +378,10 @@ class FinanceApp:
             import pandas as pd
             from datetime import datetime
 
-            # Проверяем наличие данных
             if not self.db or not hasattr(self.db, 'transactions') or not self.db.transactions:
                 messagebox.showwarning("Внимание", "Нет данных для отчета")
                 return
 
-            # Подготовка данных
             data = []
             for transaction in self.db.transactions:
                 data.append({
@@ -418,15 +398,12 @@ class FinanceApp:
 
             df = pd.DataFrame(data)
 
-            # Создание имени файла
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"financial_report_{timestamp}.xlsx"
 
-            # Сохранение в Excel
             with pd.ExcelWriter(filename, engine='openpyxl') as writer:
                 df.to_excel(writer, sheet_name='Все операции', index=False)
 
-                # Сводка по категориям
                 summary = df.groupby(['Тип', 'Категория'])['Сумма'].sum().reset_index()
                 summary.to_excel(writer, sheet_name='Сводка', index=False)
 
@@ -448,7 +425,6 @@ class FinanceApp:
             import json
             from datetime import datetime
 
-            # Проверяем наличие данных
             if not self.db:
                 messagebox.showwarning("Внимание", "Нет данных для экспорта")
                 return
