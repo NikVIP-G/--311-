@@ -6,7 +6,8 @@ from tkinter import messagebox
 
 from database import Database
 from .controller import AppController
-from finance_manager.app.Windows import (
+
+from .Windows import (
     AddTransactionWindow,
     AnalyticsWindow,
     BudgetsWindow,
@@ -14,7 +15,7 @@ from finance_manager.app.Windows import (
     SettingsWindow
 )
 
-from finance_manager.app.Frames import (
+from .Frames import (
     BalanceFrame,
     TransactionsFrame,
     ChartsFrame,
@@ -179,6 +180,9 @@ class FinanceApp:
                 controller=self.controller,
                 on_save=self._handle_transaction_save
             )
+            window.transient(self.root)
+            window.grab_set()
+            self.root.wait_window(window)
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось открыть окно: {str(e)}")
             print(f"Ошибка открытия окна добавления: {e}")
@@ -206,16 +210,31 @@ class FinanceApp:
         try:
             transaction_id = self.transactions_frame.get_selected_transaction_id()
             if transaction_id:
-                window = AddTransactionWindow(
-                    self.root,
-                    controller=self.controller,
-                    transaction_id=transaction_id,
-                    on_save=self._handle_transaction_update
-                )
+                # Находим транзакцию
+                transaction = None
+                for t in self.db.transactions:
+                    if t.id == transaction_id:
+                        transaction = t
+                        break
+
+                if transaction:
+                    window = AddTransactionWindow(
+                        self.root,
+                        controller=self.controller,
+                        transaction_id=transaction_id,
+                        on_save=self._handle_transaction_update
+                    )
+                    window.transient(self.root)
+                    window.grab_set()
+                    self.root.wait_window(window)
+                else:
+                    messagebox.showwarning("Внимание", "Транзакция не найдена")
             else:
                 messagebox.showwarning("Внимание", "Выберите операцию для редактирования")
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось открыть окно редактирования: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     def _handle_transaction_update(self, transaction):
         """Обработка обновления транзакции"""
@@ -227,26 +246,40 @@ class FinanceApp:
     def open_analytics(self):
         """Открытие окна аналитики"""
         try:
-            window = AnalyticsWindow(self.root, controller=self.controller)
+            window = AnalyticsWindow(
+                self.root,
+                transactions=self.db.transactions
+            )
+            window.transient(self.root)
+            window.grab_set()
+            self.root.wait_window(window)
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось открыть аналитику: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     def open_categories(self):
         """Открытие окна категорий"""
         try:
             window = CategoriesWindow(
                 self.root,
-                controller=self.controller,
-                on_update=self._handle_categories_update
+                categories=self.db.categories,
+                on_update_categories=self._handle_categories_update
             )
+            window.transient(self.root)
+            window.grab_set()
+            self.root.wait_window(window)
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось открыть категории: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     def _handle_categories_update(self, categories):
         """Обработка обновления категорий"""
         try:
             self.db.save_categories(categories)
             self.controller.notify_update()  # Уведомляем об обновлении
+            messagebox.showinfo("Успех", "Категории обновлены")
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось сохранить категории: {str(e)}")
 
@@ -255,11 +288,16 @@ class FinanceApp:
         try:
             window = BudgetsWindow(
                 self.root,
-                controller=self.controller,
-                on_update=self._handle_budgets_update
+                budgets=self.db.budgets,
+                on_update_budgets=self._handle_budgets_update
             )
+            window.transient(self.root)
+            window.grab_set()
+            self.root.wait_window(window)
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось открыть бюджеты: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     def _handle_budgets_update(self, budgets):
         """Обработка обновления бюджетов"""
@@ -267,6 +305,7 @@ class FinanceApp:
             self.db.budgets = budgets
             self.db.save_budgets()
             self.controller.notify_update()  # Уведомляем об обновлении
+            messagebox.showinfo("Успех", "Бюджеты обновлены")
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось сохранить бюджеты: {str(e)}")
 
@@ -275,20 +314,33 @@ class FinanceApp:
         try:
             window = SettingsWindow(
                 self.root,
-                controller=self.controller,
-                on_save=self._handle_settings_update
+                current_settings=self.db.settings.to_dict() if hasattr(self.db.settings, 'to_dict') else {},
+                on_save_settings=self._handle_settings_update
             )
+            window.transient(self.root)
+            window.grab_set()
+            self.root.wait_window(window)
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось открыть настройки: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     def _handle_settings_update(self, settings):
         """Обработка обновления настроек"""
         try:
-            self.db.settings = settings
+            # Обновляем настройки
+            for key, value in settings.items():
+                if hasattr(self.db.settings, key):
+                    setattr(self.db.settings, key, value)
+
             self.db.save_settings()
+
             # Применение темы
-            ctk.set_appearance_mode(settings.theme)
+            if 'theme' in settings:
+                ctk.set_appearance_mode(settings['theme'])
+
             self.controller.notify_update()  # Уведомляем об обновлении
+            messagebox.showinfo("Успех", "Настройки сохранены")
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось сохранить настройки: {str(e)}")
 
@@ -302,8 +354,9 @@ class FinanceApp:
 
     def _quick_add(self, transaction_type):
         """Быстрое добавление транзакции"""
-        from .models import Transaction
+        from models import Transaction
 
+        # Создаем диалоговое окно для ввода суммы
         dialog = ctk.CTkInputDialog(
             text=f"Введите сумму {'дохода' if transaction_type == 'income' else 'расхода'}:",
             title="Быстрое добавление"
@@ -312,18 +365,29 @@ class FinanceApp:
         amount = dialog.get_input()
         if amount:
             try:
-                amount_float = float(amount)
+                amount_float = float(amount.replace(',', '.'))
                 if amount_float <= 0:
                     raise ValueError("Сумма должна быть положительной")
 
+                # Получаем категории
+                categories = []
+                if transaction_type == 'income':
+                    categories = [c for c in self.db.categories if c in ["Зарплата", "Фриланс", "Инвестиции"]]
+                else:
+                    categories = [c for c in self.db.categories if c not in ["Зарплата", "Фриланс", "Инвестиции"]]
+
+                if not categories:
+                    categories = ["Прочее"]
+
                 transaction = Transaction(
                     type=transaction_type,
-                    category="Быстрая операция",
+                    category=categories[0],
                     amount=amount_float,
                     description="Быстрое добавление"
                 )
 
                 self.controller.add_transaction(transaction)
+                messagebox.showinfo("Успех", "Операция добавлена")
 
             except ValueError as e:
                 messagebox.showerror("Ошибка", str(e))
@@ -399,7 +463,7 @@ class FinanceApp:
                     'category': b.category,
                     'limit': b.limit,
                     'period': b.period,
-                    'spent': b.spent
+                    'spent': getattr(b, 'spent', 0)
                 } for b in self.db.budgets] if hasattr(self.db, 'budgets') else [],
                 'settings': self.db.settings.to_dict() if hasattr(self.db, 'settings') else {},
                 'categories': self.db.categories if hasattr(self.db, 'categories') else [],
@@ -439,7 +503,7 @@ class FinanceApp:
         • Pandas - анализ данных
         • Matplotlib - визуализация
 
-        © 2024 Все права защищены
+        © 2025 Все права защищены
         """
 
         messagebox.showinfo("О программе", about_text)
