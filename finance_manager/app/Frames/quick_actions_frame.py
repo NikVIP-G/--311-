@@ -13,7 +13,6 @@ class QuickActionsFrame(BaseFrame):
         self.on_quick_income = on_quick_income
         self.on_quick_expense = on_quick_expense
         self.on_report = on_report
-        self.on_search = on_search
         super().__init__(parent, controller=controller, **kwargs)
 
     def setup_ui(self):
@@ -24,8 +23,7 @@ class QuickActionsFrame(BaseFrame):
         actions = [
             ("💰 Быстрый доход", self.on_quick_income, "green"),
             ("💸 Быстрый расход", self.on_quick_expense, "red"),
-            ("📊 Отчет", self.on_report, "blue"),
-            ("🔍 Поиск", self.on_search, "orange")
+            ("📊 Отчет", self.on_report, "blue")
         ]
 
         for i, (text, command, color) in enumerate(actions):

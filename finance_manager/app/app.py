@@ -4,8 +4,9 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-from database import Database
+from .database import Database
 from .controller import AppController
+from .models import Transaction
 
 from .Windows import (
     AddTransactionWindow,
@@ -146,8 +147,7 @@ class FinanceApp:
             controller=self.controller,
             on_quick_income=self.quick_add_income,
             on_quick_expense=self.quick_add_expense,
-            on_report=self.generate_report,
-            on_search=self.open_search
+            on_report=self.generate_report
         )
         self.quick_actions_frame.grid(
             row=2, column=0,
@@ -263,7 +263,7 @@ class FinanceApp:
         try:
             window = CategoriesWindow(
                 self.root,
-                categories=self.db.categories,
+                categories=self.db.categories,  # Теперь передаем объекты Category
                 on_update_categories=self._handle_categories_update
             )
             window.transient(self.root)
@@ -354,9 +354,6 @@ class FinanceApp:
 
     def _quick_add(self, transaction_type):
         """Быстрое добавление транзакции"""
-        from models import Transaction
-
-        # Создаем диалоговое окно для ввода суммы
         dialog = ctk.CTkInputDialog(
             text=f"Введите сумму {'дохода' if transaction_type == 'income' else 'расхода'}:",
             title="Быстрое добавление"
@@ -369,12 +366,11 @@ class FinanceApp:
                 if amount_float <= 0:
                     raise ValueError("Сумма должна быть положительной")
 
-                # Получаем категории
-                categories = []
+                # Получаем категории соответствующего типа
                 if transaction_type == 'income':
-                    categories = [c for c in self.db.categories if c in ["Зарплата", "Фриланс", "Инвестиции"]]
+                    categories = self.db.get_income_categories()
                 else:
-                    categories = [c for c in self.db.categories if c not in ["Зарплата", "Фриланс", "Инвестиции"]]
+                    categories = self.db.get_expense_categories()
 
                 if not categories:
                     categories = ["Прочее"]
@@ -482,9 +478,6 @@ class FinanceApp:
             messagebox.showerror("Ошибка", f"Не удалось экспортировать данные: {str(e)}")
             print(f"Ошибка экспорта: {e}")
 
-    def open_search(self):
-        """Открытие поиска"""
-        messagebox.showinfo("Поиск", "Функция поиска будет реализована в следующей версии")
 
     def show_about(self):
         """Показать информацию о программе"""

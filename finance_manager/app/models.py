@@ -1,16 +1,49 @@
 """
 Модели данных
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 
 class TransactionType(Enum):
     """Типы транзакций"""
     INCOME = "income"
     EXPENSE = "expense"
+
+
+class CategoryType(Enum):
+    """Типы категорий"""
+    INCOME = "income"
+    EXPENSE = "expense"
+    BOTH = "both"  # Для категорий, которые могут быть и доходом и расходом
+
+
+@dataclass
+class Category:
+    """Модель категории с указанием типа"""
+    name: str
+    type: CategoryType = CategoryType.EXPENSE
+    color: str = ""  # Цвет для отображения
+    icon: str = ""  # Иконка
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'type': self.type.value,
+            'color': self.color,
+            'icon': self.icon
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict):
+        return cls(
+            name=data['name'],
+            type=CategoryType(data.get('type', 'expense')),
+            color=data.get('color', ''),
+            icon=data.get('icon', '')
+        )
 
 
 @dataclass
@@ -52,6 +85,7 @@ class Budget:
     limit: float
     period: str = "monthly"  # monthly, weekly, yearly
     spent: float = 0.0
+    type: str = "expense"  # income или expense
 
     def remaining(self) -> float:
         return self.limit - self.spent

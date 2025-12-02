@@ -3,6 +3,7 @@
 """
 from typing import Callable, List, Any
 import threading
+from .models import Category, CategoryType
 
 
 class AppController:
@@ -44,6 +45,32 @@ class AppController:
         """Получение базы данных (совместимость)"""
         return self._db
 
+    def get_categories(self) -> List[str]:
+        """Получение всех категорий (для совместимости)"""
+        return [cat.name for cat in self._db.categories]
+
+    def get_income_categories(self) -> List[str]:
+        """Получение категорий доходов"""
+        return self._db.get_income_categories()
+
+    def get_expense_categories(self) -> List[str]:
+        """Получение категорий расходов"""
+        return self._db.get_expense_categories()
+
+    def get_categories_by_type(self, category_type: str) -> List[str]:
+        """Получение категорий по типу"""
+        return self._db.get_categories_by_type(category_type)
+
+    def get_category_objects(self) -> List[Category]:
+        """Получение объектов категорий"""
+        return self._db.categories
+
+    def save_category_objects(self, categories: List[Category]):
+        """Сохранение объектов категорий"""
+        if hasattr(self._db, 'save_categories'):
+            self._db.save_categories(categories)
+            self.notify_update()
+
     def add_transaction(self, transaction):
         """Добавление транзакции"""
         try:
@@ -70,41 +97,3 @@ class AppController:
         except Exception as e:
             print(f"Ошибка обновления транзакции: {e}")
             raise
-
-    def get_categories(self) -> List[str]:
-        """Получение категорий"""
-        if hasattr(self._db, 'categories'):
-            return self._db.categories
-        return []
-
-    def save_categories(self, categories: List[str]):
-        """Сохранение категорий"""
-        if hasattr(self._db, 'save_categories'):
-            self._db.save_categories(categories)
-            self.notify_update()
-
-    def get_budgets(self) -> List[Any]:
-        """Получение бюджетов"""
-        if hasattr(self._db, 'budgets'):
-            return self._db.budgets
-        return []
-
-    def save_budgets(self, budgets: List[Any]):
-        """Сохранение бюджетов"""
-        if hasattr(self._db, 'budgets') and hasattr(self._db, 'save_budgets'):
-            self._db.budgets = budgets
-            self._db.save_budgets()
-            self.notify_update()
-
-    def get_settings(self) -> Any:
-        """Получение настроек"""
-        if hasattr(self._db, 'settings'):
-            return self._db.settings
-        return None
-
-    def save_settings(self, settings):
-        """Сохранение настроек"""
-        if hasattr(self._db, 'settings') and hasattr(self._db, 'save_settings'):
-            self._db.settings = settings
-            self._db.save_settings()
-            self.notify_update()

@@ -100,8 +100,7 @@ class TransactionsFrame(BaseFrame):
         buttons = [
             ("🔄 Обновить", self.refresh_table, "blue"),
             ("✏️ Редактировать", self.edit_selected, "orange"),
-            ("🗑️ Удалить", self.delete_selected, "red"),
-            ("🔍 Фильтр", self.show_filter_dialog, "green"),
+            ("🗑️ Удалить", self.delete_selected, "red")
         ]
 
         for i, (text, command, color) in enumerate(buttons):
@@ -216,7 +215,3 @@ class TransactionsFrame(BaseFrame):
         """Обновление таблицы"""
         self.update_data()
         messagebox.showinfo("Обновлено", "Таблица транзакций обновлена")
-
-    def show_filter_dialog(self):
-        """Показ диалога фильтрации"""
-        messagebox.showinfo("Фильтр", "Функция фильтрации будет реализована в следующей версии")

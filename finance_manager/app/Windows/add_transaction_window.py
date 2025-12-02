@@ -4,7 +4,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-from finance_manager.app.models import Transaction
+from ..models import Transaction, TransactionType, CategoryType
 
 
 class AddTransactionWindow(ctk.CTkToplevel):
@@ -73,7 +73,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
 
         ctk.CTkRadioButton(
             type_frame,
-            text="Доход",
+            text="💰 Доход",
             variable=self.type_var,
             value="income",
             command=self._on_type_change
@@ -81,7 +81,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
 
         ctk.CTkRadioButton(
             type_frame,
-            text="Расход",
+            text="💸 Расход",
             variable=self.type_var,
             value="expense",
             command=self._on_type_change
@@ -124,7 +124,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
         button_frame = ctk.CTkFrame(main_frame)
         button_frame.pack(pady=(10, 0))
 
-        save_text = "Сохранить" if self.transaction else "Добавить"
+        save_text = "💾 Сохранить" if self.transaction else "➕ Добавить"
         ctk.CTkButton(
             button_frame,
             text=save_text,
@@ -136,7 +136,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
 
         ctk.CTkButton(
             button_frame,
-            text="Отмена",
+            text="❌ Отмена",
             command=self.destroy,
             fg_color="gray",
             hover_color="#424242",
@@ -144,10 +144,13 @@ class AddTransactionWindow(ctk.CTkToplevel):
         ).pack(side="left", padx=10)
 
     def _get_categories(self):
-        """Получение категорий"""
+        """Получение категорий в зависимости от типа операции"""
         categories = []
-        if self.controller and hasattr(self.controller, 'get_categories'):
-            categories = self.controller.get_categories()
+        if self.db:
+            if self.type_var.get() == "income":
+                categories = self.db.get_income_categories()
+            else:
+                categories = self.db.get_expense_categories()
 
         if not categories:
             # Категории по умолчанию
