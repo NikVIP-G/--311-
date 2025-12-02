@@ -4,6 +4,7 @@ from .budgets_window import BudgetsWindow
 from .analytics_window import AnalyticsWindow
 from .categories_window import CategoriesWindow
 from .settings_window import SettingsWindow
+from .export_window import ExportWindow
 
 
 __all__ = [
@@ -12,5 +13,6 @@ __all__ = [
     "BudgetsWindow",
     "AnalyticsWindow",
     "CategoriesWindow",
-    "SettingsWindow"
+    "SettingsWindow",
+    "ExportWindow"
 ]

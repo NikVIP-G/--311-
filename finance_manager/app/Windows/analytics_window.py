@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 from .base_window import BaseWindow
-from finance_manager.app.models import Transaction, TransactionType
+from ..models import Transaction, TransactionType
 
 
 class AnalyticsWindow(BaseWindow):

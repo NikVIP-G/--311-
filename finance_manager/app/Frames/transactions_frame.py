@@ -6,7 +6,7 @@ from tkinter import ttk, messagebox
 from typing import Optional
 from datetime import datetime
 
-from finance_manager.app.models import TransactionType
+from ..models import TransactionType
 from .base_frame import BaseFrame
 
 
