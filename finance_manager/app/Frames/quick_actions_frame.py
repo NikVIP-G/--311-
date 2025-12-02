@@ -9,7 +9,7 @@ class QuickActionsFrame(BaseFrame):
     """Фрейм быстрых действий"""
 
     def __init__(self, parent, controller=None, on_quick_income=None, on_quick_expense=None,
-                 on_report=None, on_search=None, **kwargs):
+                 on_report=None, **kwargs):
         self.on_quick_income = on_quick_income
         self.on_quick_expense = on_quick_expense
         self.on_report = on_report
@@ -37,7 +37,8 @@ class QuickActionsFrame(BaseFrame):
             )
             btn.grid(row=0, column=i, padx=5, pady=5, sticky="ew")
 
-    def _darken_color(self, color_name: str) -> str:
+    @staticmethod
+    def _darken_color(color_name: str) -> str:
         """Затемнение цвета для эффекта hover"""
         colors = {
             "green": "#2E7D32",

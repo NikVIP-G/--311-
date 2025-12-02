@@ -1,9 +1,9 @@
 """
 Контроллер для управления данными и обновлением UI
 """
-from typing import Callable, List, Any
+from typing import Callable, List
 import threading
-from .models import Category, CategoryType
+from .models import Category
 
 
 class AppController:

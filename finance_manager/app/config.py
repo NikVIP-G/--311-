@@ -1,7 +1,6 @@
 """
 Конфигурация приложения
 """
-import os
 from pathlib import Path
 
 

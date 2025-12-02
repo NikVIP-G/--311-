@@ -45,7 +45,6 @@ def export_to_excel(data: List[Dict], filename: str):
         df.to_excel(writer, sheet_name='Данные', index=False)
 
         # Добавляем форматирование
-        workbook = writer.book
         worksheet = writer.sheets['Данные']
 
         # Устанавливаем ширину колонок

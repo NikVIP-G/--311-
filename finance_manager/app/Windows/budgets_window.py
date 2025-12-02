@@ -12,6 +12,10 @@ class BudgetsWindow(BaseWindow):
 
     def __init__(self, parent, budgets: List[Budget], on_update_budgets=None):
         super().__init__(parent, "Управление бюджетами", 600, 500)
+        self.period_combo = None
+        self.limit_entry = None
+        self.category_combo = None
+        self.tree = None
         self.budgets = budgets
         self.on_update_budgets = on_update_budgets
         self.setup_budgets_ui()

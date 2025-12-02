@@ -10,6 +10,11 @@ class SettingsWindow(BaseWindow):
 
     def __init__(self, parent, current_settings: Dict, on_save_settings=None):
         super().__init__(parent, "Настройки", 500, 400)
+        self.save_interval_var = None
+        self.autosave_var = None
+        self.currency_var = None
+        self.color_var = None
+        self.theme_var = None
         self.current_settings = current_settings
         self.on_save_settings = on_save_settings
         self.setup_settings_ui()

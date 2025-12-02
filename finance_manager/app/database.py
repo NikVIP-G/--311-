@@ -4,7 +4,7 @@
 import json
 import os
 from dataclasses import asdict
-from typing import List, Dict, Optional
+from typing import List, Dict
 from datetime import datetime, timedelta
 from .models import Transaction, Budget, Settings, TransactionType, Category, CategoryType
 
@@ -306,4 +306,4 @@ class Database:
             current_balance += daily_balance.get(date, 0)
             balance_history.append(current_balance)
 
-        return list(reversed(balance_history))  # От старых к новым
+        return list(reversed(balance_history))

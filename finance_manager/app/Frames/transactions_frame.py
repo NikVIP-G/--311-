@@ -14,6 +14,8 @@ class TransactionsFrame(BaseFrame):
     """Фрейм транзакций"""
 
     def __init__(self, parent, controller=None, on_delete=None, on_edit=None, **kwargs):
+        self.tree = None
+        self.title_label = None
         self.on_delete_callback = on_delete
         self.on_edit_callback = on_edit
         # Передаем контроллер в родительский конструктор
@@ -114,7 +116,8 @@ class TransactionsFrame(BaseFrame):
             )
             btn.grid(row=0, column=i, padx=5, pady=5)
 
-    def _darken_color(self, color_name: str) -> str:
+    @staticmethod
+    def _darken_color(color_name: str) -> str:
         """Затемнение цвета для эффекта hover"""
         colors = {
             "blue": "#1E40AF",
@@ -181,7 +184,7 @@ class TransactionsFrame(BaseFrame):
                 self.tree.tag_configure('expense', background='#FEE2E2')
                 self.tree.item(item, tags=(transaction.id, 'expense'))
 
-    def _on_double_click(self, event):
+    def _on_double_click(self):
         """Обработка двойного клика"""
         if self.on_edit_callback:
             self.on_edit_callback()

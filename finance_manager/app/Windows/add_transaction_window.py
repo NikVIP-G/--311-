@@ -4,7 +4,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-from ..models import Transaction, TransactionType, CategoryType
+from ..models import Transaction
 
 
 class AddTransactionWindow(ctk.CTkToplevel):
@@ -64,7 +64,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
 
         # Тип операции
         ctk.CTkLabel(main_frame, text="Тип операции:",
-                    font=("Arial", 12, "bold")).pack(pady=(0, 5))
+                     font=("Arial", 12, "bold")).pack(pady=(0, 5))
 
         self.type_var = ctk.StringVar(value="expense")
 
@@ -89,7 +89,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
 
         # Категория
         ctk.CTkLabel(main_frame, text="Категория:",
-                    font=("Arial", 12, "bold")).pack(pady=(0, 5))
+                     font=("Arial", 12, "bold")).pack(pady=(0, 5))
 
         self.category_var = ctk.StringVar()
         self.category_combo = ctk.CTkComboBox(
@@ -102,7 +102,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
 
         # Сумма
         ctk.CTkLabel(main_frame, text="Сумма (₽):",
-                    font=("Arial", 12, "bold")).pack(pady=(0, 5))
+                     font=("Arial", 12, "bold")).pack(pady=(0, 5))
 
         self.amount_var = ctk.StringVar()
         self.amount_entry = ctk.CTkEntry(
@@ -115,7 +115,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
 
         # Описание
         ctk.CTkLabel(main_frame, text="Описание:",
-                    font=("Arial", 12, "bold")).pack(pady=(0, 5))
+                     font=("Arial", 12, "bold")).pack(pady=(0, 5))
 
         self.description_text = ctk.CTkTextbox(main_frame, height=100, width=300)
         self.description_text.pack(pady=(0, 20))
@@ -158,7 +158,7 @@ class AddTransactionWindow(ctk.CTkToplevel):
                 categories = ["Зарплата", "Фриланс", "Инвестиции", "Подарки", "Возврат", "Прочие доходы"]
             else:
                 categories = ["Продукты", "Кафе и рестораны", "Транспорт", "Жилье", "Развлечения",
-                           "Здоровье", "Образование", "Прочие расходы"]
+                              "Здоровье", "Образование", "Прочие расходы"]
 
         return categories
 

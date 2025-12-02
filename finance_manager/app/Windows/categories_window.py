@@ -14,6 +14,15 @@ class CategoriesWindow(BaseWindow):
 
     def __init__(self, parent, categories: List[Category], on_update_categories=None):
         super().__init__(parent, "Управление категориями", 600, 500)
+        self.color_var = None
+        self.category_type_combo = None
+        self.category_type_var = None
+        self.new_category_entry = None
+        self.expense_listbox = None
+        self.income_listbox = None
+        self.expense_tab = None
+        self.income_tab = None
+        self.tabview = None
         self.categories = categories.copy() if categories else []
         self.on_update_categories = on_update_categories
         self.setup_categories_ui()

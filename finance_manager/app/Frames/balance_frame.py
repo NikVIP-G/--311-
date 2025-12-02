@@ -5,12 +5,18 @@ import customtkinter as ctk
 from datetime import datetime
 from .base_frame import BaseFrame
 
+
 class BalanceFrame(BaseFrame):
     """Фрейм баланса"""
 
     def __init__(self, parent, controller=None, **kwargs):
         # Передаем контроллер в родительский конструктор
         super().__init__(parent, controller=controller, **kwargs)
+        self.expense_label = None
+        self.income_label = None
+        self.balance_label = None
+        self.stats_frame = None
+        self.title_label = None
 
     def setup_ui(self):
         # Основной контейнер

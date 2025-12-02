@@ -2,8 +2,7 @@
 Фрейм для отображения графиков и диаграмм
 """
 import customtkinter as ctk
-from datetime import datetime, timedelta
-from typing import Dict, List
+from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -17,6 +16,13 @@ class ChartsFrame(BaseFrame):
 
     def __init__(self, parent, controller=None, **kwargs):
         super().__init__(parent, controller=controller, **kwargs)
+        self.refresh_btn = None
+        self.budget_tab = None
+        self.trends_tab = None
+        self.categories_tab = None
+        self.income_expense_tab = None
+        self.tabview = None
+        self.title_label = None
         self.figures = []
         self.canvases = []
         self.current_tab = 0
@@ -171,11 +177,11 @@ class ChartsFrame(BaseFrame):
             # Добавление значений на столбцы
             for bar, value in zip(bars, values):
                 height = bar.get_height()
-                ax.text(bar.get_x() + bar.get_width()/2., height + max(values)*0.02,
-                       f'{value:,.0f} ₽', ha='center', va='bottom', fontsize=10)
+                ax.text(bar.get_x() + bar.get_width() / 2., height + max(values) * 0.02,
+                        f'{value:,.0f} ₽', ha='center', va='bottom', fontsize=10)
 
             ax.set_title(f'Доходы и расходы за {current_month}.{current_year}',
-                        fontsize=14, fontweight='bold')
+                         fontsize=14, fontweight='bold')
             ax.set_ylabel('Сумма (₽)', fontsize=12)
             ax.grid(axis='y', alpha=0.3)
             ax.set_axisbelow(True)
@@ -183,8 +189,8 @@ class ChartsFrame(BaseFrame):
             # Расчет баланса
             balance = income - expense
             ax.text(0.5, -0.15, f'Баланс: {balance:,.0f} ₽',
-                   transform=ax.transAxes, ha='center', fontsize=12,
-                   fontweight='bold', color='green' if balance >= 0 else 'red')
+                    transform=ax.transAxes, ha='center', fontsize=12,
+                    fontweight='bold', color='green' if balance >= 0 else 'red')
 
             fig.tight_layout()
 
@@ -244,7 +250,7 @@ class ChartsFrame(BaseFrame):
                 values,
                 labels=labels,
                 colors=colors,
-                autopct=lambda pct: f'{pct:.1f}%\n({pct*sum(values)/100:,.0f} ₽)',
+                autopct=lambda pct: f'{pct:.1f}%\n({pct * sum(values) / 100:,.0f} ₽)',
                 startangle=90,
                 textprops={'fontsize': 9}
             )
@@ -314,8 +320,8 @@ class ChartsFrame(BaseFrame):
             x = np.arange(len(months))
             width = 0.35
 
-            bars1 = ax.bar(x - width/2, income_data, width, label='Доходы', color='#4CAF50')
-            bars2 = ax.bar(x + width/2, expense_data, width, label='Расходы', color='#F44336')
+            bars1 = ax.bar(x - width / 2, income_data, width, label='Доходы', color='#4CAF50')
+            bars2 = ax.bar(x + width / 2, expense_data, width, label='Расходы', color='#F44336')
 
             ax.set_xlabel('Месяц', fontsize=12)
             ax.set_ylabel('Сумма (₽)', fontsize=12)
@@ -331,8 +337,9 @@ class ChartsFrame(BaseFrame):
                 for bar in bars:
                     height = bar.get_height()
                     if height > 0:
-                        ax.text(bar.get_x() + bar.get_width()/2., height + max(max(income_data), max(expense_data))*0.01,
-                               f'{height:,.0f}', ha='center', va='bottom', fontsize=8)
+                        ax.text(bar.get_x() + bar.get_width() / 2.,
+                                height + max(max(income_data), max(expense_data)) * 0.01,
+                                f'{height:,.0f}', ha='center', va='bottom', fontsize=8)
 
             add_values(bars1)
             add_values(bars2)
@@ -392,17 +399,13 @@ class ChartsFrame(BaseFrame):
             ax = fig.add_subplot(111)
 
             x = np.arange(len(categories))
-            width = 0.35
-
-            bars1 = ax.bar(x - width/2, limits, width, label='Лимит', color='#2196F3', alpha=0.7)
-            bars2 = ax.bar(x + width/2, spent, width, label='Потрачено', color='#FF9800')
 
             # Добавление процентной информации
             for i, (limit, spent_val, percentage) in enumerate(zip(limits, spent, percentages)):
                 color = 'green' if percentage <= 80 else 'orange' if percentage <= 100 else 'red'
                 ax.text(i, max(limit, spent_val) * 1.05,
-                       f'{percentage:.0f}%',
-                       ha='center', fontsize=9, fontweight='bold', color=color)
+                        f'{percentage:.0f}%',
+                        ha='center', fontsize=9, fontweight='bold', color=color)
 
             ax.set_xlabel('Категории', fontsize=12)
             ax.set_ylabel('Сумма (₽)', fontsize=12)

@@ -478,8 +478,8 @@ class FinanceApp:
             messagebox.showerror("Ошибка", f"Не удалось экспортировать данные: {str(e)}")
             print(f"Ошибка экспорта: {e}")
 
-
-    def show_about(self):
+    @staticmethod
+    def show_about():
         """Показать информацию о программе"""
         about_text = """
         Personal Finance Manager v1.0
