@@ -14,8 +14,6 @@ class TransactionsFrame(BaseFrame):
     """Фрейм транзакций"""
 
     def __init__(self, parent, controller=None, on_delete=None, on_edit=None, **kwargs):
-        self.tree = None
-        self.title_label = None
         self.on_delete_callback = on_delete
         self.on_edit_callback = on_edit
         # Передаем контроллер в родительский конструктор

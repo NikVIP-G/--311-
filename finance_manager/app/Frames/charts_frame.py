@@ -16,13 +16,7 @@ class ChartsFrame(BaseFrame):
 
     def __init__(self, parent, controller=None, **kwargs):
         super().__init__(parent, controller=controller, **kwargs)
-        self.refresh_btn = None
-        self.budget_tab = None
-        self.trends_tab = None
-        self.categories_tab = None
-        self.income_expense_tab = None
-        self.tabview = None
-        self.title_label = None
+
         self.figures = []
         self.canvases = []
         self.current_tab = 0

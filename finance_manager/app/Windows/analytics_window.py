@@ -14,10 +14,6 @@ class AnalyticsWindow(BaseWindow):
 
     def __init__(self, parent, transactions: List[Transaction]):
         super().__init__(parent, "Детальная аналитика", 1000, 700)
-        self.timeline_tab = None
-        self.categories_tab = None
-        self.summary_tab = None
-        self.tabview = None
         self.transactions = transactions
         self.setup_analytics()
 
