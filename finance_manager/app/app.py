@@ -3,6 +3,10 @@
 """
 import customtkinter as ctk
 from tkinter import messagebox
+import csv
+import json
+from datetime import datetime
+import pandas as pd
 
 from .database import Database
 from .controller import AppController
@@ -422,37 +426,142 @@ class FinanceApp:
     def export_data(self):
         """Экспорт данных"""
         try:
-            import json
-            from datetime import datetime
-
+            # Проверяем наличие данных
             if not self.db:
                 messagebox.showwarning("Внимание", "Нет данных для экспорта")
                 return
 
+            # Создаем диалоговое окно для выбора типа экспорта
+            dialog = ctk.CTkInputDialog(
+                text="Выберите тип экспорта:\n1 - JSON (все данные)\n2 - Excel (транзакции)\n3 - CSV (транзакции)",
+                title="Экспорт данных"
+            )
+
+            export_type = dialog.get_input()
+
+            if not export_type:
+                return
+
+            if export_type == "1":
+                self._export_json()
+            elif export_type == "2":
+                self._export_excel()
+            elif export_type == "3":
+                self._export_csv()
+            else:
+                messagebox.showerror("Ошибка", "Выберите 1, 2 или 3")
+
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Не удалось экспортировать данные: {str(e)}")
+            print(f"Ошибка экспорта: {e}")
+
+    def _export_json(self):
+        """Экспорт в JSON"""
+        try:
             data = {
                 'transactions': [t.to_dict() for t in self.db.transactions],
                 'budgets': [{
                     'category': b.category,
                     'limit': b.limit,
                     'period': b.period,
-                    'spent': getattr(b, 'spent', 0)
+                    'spent': getattr(b, 'spent', 0),
+                    'type': getattr(b, 'type', 'expense')
                 } for b in self.db.budgets] if hasattr(self.db, 'budgets') else [],
                 'settings': self.db.settings.to_dict() if hasattr(self.db, 'settings') else {},
-                'categories': self.db.categories if hasattr(self.db, 'categories') else [],
-                'export_date': datetime.now().isoformat()
+                'categories': [cat.to_dict() for cat in self.db.categories] if hasattr(self.db, 'categories') else [],
+                'export_date': datetime.now().isoformat(),
+                'app_version': '1.0.0'
             }
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"finance_backup_{timestamp}.json"
 
             with open(filename, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
+                json.dump(data, f, ensure_ascii=False, indent=2, default=str)
 
-            messagebox.showinfo("Экспорт", f"Данные экспортированы в файл:\n{filename}")
+            messagebox.showinfo("Экспорт", f"✅ Данные экспортированы в JSON:\n{filename}")
 
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Не удалось экспортировать данные: {str(e)}")
-            print(f"Ошибка экспорта: {e}")
+            messagebox.showerror("Ошибка", f"Ошибка экспорта в JSON: {str(e)}")
+
+    def _export_excel(self):
+        """Экспорт транзакций в Excel"""
+        try:
+            if not self.db.transactions:
+                messagebox.showwarning("Внимание", "Нет транзакций для экспорта")
+                return
+
+            # Подготовка данных
+            data = []
+            for transaction in self.db.transactions:
+                data.append({
+                    'ID': transaction.id,
+                    'Дата': transaction.date,
+                    'Тип': 'Доход' if transaction.type == 'income' else 'Расход',
+                    'Категория': transaction.category,
+                    'Сумма': transaction.amount,
+                    'Валюта': 'RUB',
+                    'Описание': transaction.description
+                })
+
+            df = pd.DataFrame(data)
+
+            # Создание имени файла
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"transactions_{timestamp}.xlsx"
+
+            # Сохранение в Excel
+            with pd.ExcelWriter(filename, engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name='Транзакции', index=False)
+
+                # Добавляем сводку
+                summary = df.groupby(['Тип', 'Категория'])['Сумма'].sum().reset_index()
+                summary.to_excel(writer, sheet_name='Сводка', index=False)
+
+                # Добавляем статистику по месяцам
+                df['Дата'] = pd.to_datetime(df['Дата'], errors='coerce')
+                df['Месяц'] = df['Дата'].dt.strftime('%Y-%m')
+                monthly_stats = df.groupby(['Месяц', 'Тип'])['Сумма'].sum().unstack(fill_value=0)
+                monthly_stats.to_excel(writer, sheet_name='По месяцам')
+
+            messagebox.showinfo("Экспорт", f"✅ Транзакции экспортированы в Excel:\n{filename}")
+
+        except ImportError:
+            messagebox.showerror("Ошибка",
+                                 "Для экспорта в Excel установите:\n"
+                                 "pip install pandas openpyxl")
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Ошибка экспорта в Excel: {str(e)}")
+
+    def _export_csv(self):
+        """Экспорт транзакций в CSV"""
+        try:
+            if not self.db.transactions:
+                messagebox.showwarning("Внимание", "Нет транзакций для экспорта")
+                return
+
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"transactions_{timestamp}.csv"
+
+            with open(filename, 'w', newline='', encoding='utf-8-sig') as csvfile:
+                fieldnames = ['ID', 'Дата', 'Тип', 'Категория', 'Сумма', 'Описание']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                writer.writeheader()
+                for transaction in self.db.transactions:
+                    writer.writerow({
+                        'ID': transaction.id,
+                        'Дата': transaction.date,
+                        'Тип': 'Доход' if transaction.type == 'income' else 'Расход',
+                        'Категория': transaction.category,
+                        'Сумма': transaction.amount,
+                        'Описание': transaction.description
+                    })
+
+            messagebox.showinfo("Экспорт", f"✅ Транзакции экспортированы в CSV:\n{filename}")
+
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Ошибка экспорта в CSV: {str(e)}")
 
     @staticmethod
     def show_about():
