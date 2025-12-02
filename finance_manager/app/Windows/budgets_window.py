@@ -4,7 +4,7 @@ from tkinter.messagebox import showerror, showinfo
 import customtkinter as ctk
 
 from .base_window import BaseWindow
-from finance_manager.models import Budget
+from finance_manager.app.models import Budget
 
 
 class BudgetsWindow(BaseWindow):

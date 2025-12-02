@@ -3,7 +3,7 @@ b = input('b: ')
 while not b.isdigit():
     b = input()
 
-print(a * int(b))
+print(int(b))
 
 a = input('a: ')
 b = input('b: ')

@@ -1,19 +1,23 @@
+"""
+Фрейм для быстрых действий
+"""
+import customtkinter as ctk
 from .base_frame import BaseFrame
-from customtkinter import CTkButton
 
 
 class QuickActionsFrame(BaseFrame):
-    """Фрейм для быстрых действий"""
+    """Фрейм быстрых действий"""
 
-    def __init__(self, parent, on_quick_income=None, on_quick_expense=None,
+    def __init__(self, parent, controller=None, on_quick_income=None, on_quick_expense=None,
                  on_report=None, on_search=None, **kwargs):
         self.on_quick_income = on_quick_income
         self.on_quick_expense = on_quick_expense
         self.on_report = on_report
         self.on_search = on_search
-        super().__init__(parent, **kwargs)
+        super().__init__(parent, controller=controller, **kwargs)
 
     def setup_ui(self):
+        """Настройка интерфейса"""
         self.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
         # Быстрые кнопки
@@ -25,17 +29,17 @@ class QuickActionsFrame(BaseFrame):
         ]
 
         for i, (text, command, color) in enumerate(actions):
-            btn = CTkButton(
+            btn = ctk.CTkButton(
                 self,
                 text=text,
                 command=command if command else lambda: None,
                 height=40,
                 fg_color=color,
-                hover_color=self.darken_color(color)
+                hover_color=self._darken_color(color)
             )
             btn.grid(row=0, column=i, padx=5, pady=5, sticky="ew")
 
-    def darken_color(self, color_name: str) -> str:
+    def _darken_color(self, color_name: str) -> str:
         """Затемнение цвета для эффекта hover"""
         colors = {
             "green": "#2E7D32",
@@ -44,3 +48,7 @@ class QuickActionsFrame(BaseFrame):
             "orange": "#EF6C00"
         }
         return colors.get(color_name, "#1F538D")
+
+    def update_data(self):
+        """Обновление данных"""
+        pass
