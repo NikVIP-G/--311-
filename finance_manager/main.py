@@ -1,5 +1,4 @@
 import sys
-import os
 
 from app.app import FinanceApp
 
