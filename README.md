@@ -3,3 +3,6 @@ https://www.figma.com/proto/ziXIhHR4h1OfKIZaq6LiYh/%D0%98%D0%A1%D0%A2-311--%D0%9
 
 Для лабораторная работа №7:
 https://disk.yandex.ru/i/hbw415kRYVl7KA
+
+Презентация лаборная:
+https://disk.yandex.ru/i/FV27dcw7m6m8DQ
